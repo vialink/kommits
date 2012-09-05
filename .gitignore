@@ -1,0 +1,6 @@
+# ignore config file generated from make
+kommits/config.py
+
+*.py[oc]
+*.swp
+
