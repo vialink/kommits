@@ -1,6 +1,8 @@
 # Append here all the hg paths you wish to track
 HGPATHS = (
     '/var/www/hg/repos/',
+)
+GITPATHS = (
     '/var/www/git/',
 )
 
