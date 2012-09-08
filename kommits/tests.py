@@ -61,7 +61,7 @@ class TestHGRepo(unittest.TestCase):
         commit = repo.commits[0]
         while len(repo.commits) > 0:
             repo.commits.pop()
-        expected_url = 'https://hg.foo.bar/repos/repoA/rev/1'
+        expected_url = 'https://hg.foo.bar/repos/repoA/rev/0'
         self.assertEqual(expected_url, commit.url)
 
 

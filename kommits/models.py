@@ -26,7 +26,7 @@ class Commit(_Commit):
     def url(self):
         return join(
             self.repo.baseurl,
-            self.urlpattern.format(id=id, repo=repo, user=user, date=date, branch=branch),
+            self.urlpattern.format(id=self.id, repo=self.repo, user=self.user, date=self.date, branch=self.branch),
         )
 
 

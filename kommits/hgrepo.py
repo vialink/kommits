@@ -47,7 +47,7 @@ def find_hg_commits(repo, from_date, until_date):
     com = lambda ctx: Commit(
         id=ctx.rev(),
         repo=repo,
-        urlpattern='{repo.name}/revs/{id}',
+        urlpattern='{repo.name}/rev/{id}',
         user=ctx.user(),
         date=when(ctx),
         branch=ctx.branch(),
