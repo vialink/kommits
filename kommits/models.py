@@ -2,7 +2,7 @@ from collections import namedtuple
 from os.path import join
 
 _Repo = namedtuple('Repo', 'name basepath type baseurl commits')
-_Commit = namedtuple('Commit', 'id url user date branch comment')
+_Commit = namedtuple('Commit', 'id url user date branch message')
 
 
 class Repo(_Repo):

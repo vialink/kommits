@@ -1,4 +1,5 @@
 from os import path, listdir
+from datetime import datetime
 
 from mercurial import ui, hg, util
 from mercurial.node import short
@@ -31,5 +32,26 @@ def find_hg_repos(basepath):
 
 def find_hg_commits(repo, from_date, until_date):
     """Initializes repo.commits with all commits between the given dates"""
-    pass
+    if from_date > until_date:
+        # this should be impossible, maybe we should
+        # raise an exception to indicate missuse
+        return []
+
+    hgrepo = hg.repository(ui.ui(), repo.path)
+    changes = hgrepo.changelog
+
+    ctx = lambda c: hgrepo.changectx(c)
+    # helper function to get datetime from change
+    when = lambda ctx: datetime.fromtimestamp(ctx.date()[0])
+    # helper function to get Commit from change
+    com = lambda ctx: Commit(
+        id=ctx.rev(),
+        url='',
+        user=ctx.user(),
+        date=when(ctx),
+        branch=ctx.branch(),
+        message=ctx.description(),
+    )
+    # filter on date
+    repo.commits.extend([com(ctx(c)) for c in changes if from_date < when(ctx(c)) < until_date])
 
