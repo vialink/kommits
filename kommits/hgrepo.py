@@ -51,7 +51,8 @@ def find_hg_commits(repo, from_date, until_date):
         user=ctx.user(),
         date=when(ctx),
         branch=ctx.branch(),
-        message=ctx.description(),
+        #XXX: I don't exactly know why we need to decode
+        message=ctx.description().decode('utf-8'),
     )
     # filter on date
     repo.commits.extend([com(ctx(c)) for c in changes if from_date < when(ctx(c)) < until_date])
