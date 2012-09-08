@@ -1,0 +1,19 @@
+{% for repo in withcommits %}<p>
+<b><a href="{{ repo.url }}">{{ repo.name }}</a></b>
+<table border="1">
+{% for commit in repo.commits %}<tr>
+<td><a href="{{ commit.url }}">{{ commit.id }}</a></td>
+<td>{{ commit.user }}</td>
+<td>{{ commit.date }}</td>
+<td>{{ commit.branch }}</td>
+<td>{{ commit.message }}</td>
+</tr>
+{% endfor %}</table>
+</p>
+{% endfor %}<p>
+<b>No commits:</b>
+<ul>
+{% for repo in nocommits %}<li><a href="{{ repo.url }}">{{ repo.name }}</a></li>
+{% endfor %}</ul>
+</p>
+
