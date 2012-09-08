@@ -7,7 +7,7 @@ from mercurial.node import short
 from models import Repo, Commit
 
 
-def find_hg_repos(basepath):
+def find_hg_repos(basepath, baseurl=''):
     """Returns a list of hg Repos in basepath"""
     def _find_repos(basepath, name):
         if not path.isdir(basepath):
@@ -20,10 +20,10 @@ def find_hg_repos(basepath):
                 ret.extend(_find_repos( path.join(basepath, r), reponame))
         else:
             ret.append(Repo(
+                type='hg',
                 name=name,
                 basepath=basepath,
-                type='hg',
-                baseurl='',
+                baseurl=baseurl,
                 commits=[],
             ))
         return ret
@@ -46,7 +46,8 @@ def find_hg_commits(repo, from_date, until_date):
     # helper function to get Commit from change
     com = lambda ctx: Commit(
         id=ctx.rev(),
-        url='',
+        repo=repo,
+        urlpattern='{repo.name}/revs/{id}',
         user=ctx.user(),
         date=when(ctx),
         branch=ctx.branch(),

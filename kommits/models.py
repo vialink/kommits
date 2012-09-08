@@ -1,8 +1,8 @@
 from collections import namedtuple
 from os.path import join
 
-_Repo = namedtuple('Repo', 'name basepath type baseurl commits')
-_Commit = namedtuple('Commit', 'id url user date branch message')
+_Repo = namedtuple('Repo', 'type name basepath baseurl commits')
+_Commit = namedtuple('Commit', 'id repo urlpattern user date branch message')
 
 
 class Repo(_Repo):
@@ -11,8 +11,22 @@ class Repo(_Repo):
     def path(self):
         return join(self.basepath, self.name)
 
+    @property
+    def url(self):
+        return join(self.baseurl, self.name)
+
 
 class Commit(_Commit):
-    pass
+    """TODO: document properly
+    urlpattern may use the fields id, repo, user, date and branch and will always
+    be joined with the repo baseurl
+    """
+
+    @property
+    def url(self):
+        return join(
+            self.repo.baseurl,
+            self.urlpattern.format(id=id, repo=repo, user=user, date=date, branch=branch),
+        )
 
 
