@@ -1,77 +1,57 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-import os
-import re
-import time
+from sys import stderr
+from os import path
 from datetime import datetime, timedelta
-from subprocess import Popen, PIPE
 
-from hg_util import repository_to_table
+from jinja2 import Environment, FileSystemLoader
 
-#---
+import hgrepo
+try:
+    import config
+except ImportError as e:
+    print >> stderr, 'You should run make to copy the sample config.'
+    raise e
 
-base = '/Users/jan/Projects'
-end = datetime.now()
-start = end - timedelta(days=1)
 
-#---
+BASEDIR = path.dirname(__file__)
+J2ENV = Environment()
 
-def search_repos(reponame, repodir):
-    if not os.path.isdir(repodir):
-        return []
-    subdir = os.listdir(repodir)
-    ret = []
-    if '.hg' not in subdir:
-        for r in subdir:
-            ret.extend(search_repos('%s/%s' % (reponame, r), os.path.join(repodir, r)))
-    else:
-        ret.append(tuple([ reponame, repodir ]))
-    return ret
 
-#regexp = [
-#    (re.compile(r'^(changeset:\s+[0-9]+:)([a-zA-Z0-9]+)', flags=re.MULTILINE), r'<a href="">\1\2</a>'),
-#]
+def render_report(from_date, until_date):
+    """Will return a string with the content needed to send to sendmail."""
+    #TODO: git repos
+    withcommits = []
+    nocommits = []
+    for (basepath, baseurl) in config.HGREPOS:
+        repos = hgrepo.find_hg_repos(basepath, baseurl)
+        for repo in repos:
+            hgrepo.find_hg_commits(repo, from_date, until_date)
+            if len(repo.commits) > 0:
+                withcommits.append(repo)
+            else:
+                nocommits.append(repo)
 
-repos = search_repos('', base)
-repos.sort()
-format = '%Y-%m-%d %H:%M:%S'
-daterange = '%s to %s' % (start.strftime(format), end.strftime(format))
-nocommits = []
-content = []
-for r in repos:
-    #args = ['/usr/bin/hg', 'log', '--date', daterange, r[1]]
-    #proc = Popen(args, stdout=PIPE, stderr=PIPE)
-    #out, err = proc.communicate()
+    l = FileSystemLoader(BASEDIR)
+    t = l.load(J2ENV, 'report.html')
+    return t.render(withcommits=withcommits, nocommits=nocommits)
 
-    out = repository_to_table(r[0][1:], r[1], date=time.mktime(start.timetuple()))
-    if out:
-        #for pattern, repl in regexp:
-        #    out = re.sub(pattern, repl, out)
-        content.append('<p>')
-        content.append('<b>%s</b>' % r[0])
-        content.append(out)
-        content.append('</p>')
-    else:
-        nocommits.append(r[0])
-nocommits.sort()
 
-headers = [
-    #'From: noreply@vialink.com.br',
-    #'Reply-to: noreply@vialink.com.br',
-    #'Return-path: noreply@vialink.com.br',
-    'Subject: Commits (%s)' % daterange,
-    'Content-Type: text/html; charset="utf-8"',
-]
+def render_email(from_date, until_date):
+    """Same as render_report but with email headers."""
+    dateformat = '%Y-%m-%d %H:%M:%S'
+    header = '\n'.join((
+        #'From: noreply@vialink.com.br',
+        #'Reply-to: noreply@vialink.com.br',
+        #'Return-path: noreply@vialink.com.br',
+        'Subject: Commits ({0} to {1})'.format(from_date.strftime(dateformat), until_date.strftime(dateformat)),
+        'Content-Type: text/html; charset="utf-8"',
+    ))
+    return '{0}\n\n{1}'.format(header, render_report(from_date, until_date))
 
-print '\n'.join(headers)
-print ''
-print '\n'.join(content)
-print '<p>'
-print '<b>No commits:</b>'
-print '<ul>'
-for c in nocommits:
-    print '<li>%s</li>' % c
-print '</ul>'
-print '</p>'
+
+def render_daily_email():
+    """Same as render_email but using the last 24h timespan."""
+    until_date = datetime.now()
+    from_date = until_date - timedelta(days=1)
+    return render_email(from_date, until_date)
+
 
