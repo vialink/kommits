@@ -2,10 +2,10 @@ import unittest
 from os import path, system
 
 import models
-import hgfinder
+import hgrepo
 
 
-class TestHGFinder(unittest.TestCase):
+class TestHGRepo(unittest.TestCase):
 
     def setUp(self):
         """Create a few example repos. Should create some commits."""
@@ -23,8 +23,8 @@ class TestHGFinder(unittest.TestCase):
         system('rm -rf {0}'.format(self.repobase))
 
     def test_finder(self):
-        """Test if repos created in setUp are found by hgfinder."""
-        repos = hgfinder.find_hg_repos(self.repobase)
+        """Test if repos created in setUp are found by hgrepo module."""
+        repos = hgrepo.find_hg_repos(self.repobase)
         reponames = []
         for repo in repos:
             reponames.append(repo.name)

@@ -5,6 +5,7 @@ from mercurial.node import short
 
 from models import Repo, Commit
 
+
 def find_hg_repos(repopath):
     """Returns a list of hg Repos in repopath"""
     def _find_repos(repopath, name):
@@ -27,4 +28,8 @@ def find_hg_repos(repopath):
         return ret
     return _find_repos(repopath, '')
 
+
+def find_commits(repo, from_date, until_date):
+    """Initializes repo.commits with all commits between the given dates"""
+    pass
 
