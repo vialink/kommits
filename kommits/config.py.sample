@@ -1,8 +1,8 @@
 # Append here all the hg paths you wish to track
-HGPATHS = (
-    '/var/www/hg/repos/',
+HGREPOS = (
+    ('/var/www/hg/repos/', 'https://hg.vialink.com.br/'),
 )
-GITPATHS = (
-    '/var/www/git/',
+GITREPOS = (
+    ('/var/www/git/', 'https://git.vialink.com.br/'),
 )
 
