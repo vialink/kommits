@@ -9,15 +9,15 @@ from models import Repo, Commit
 
 def find_hg_repos(basepath, baseurl=''):
     """Returns a list of hg Repos in basepath"""
-    def _find_repos(basepath, name):
-        if not path.isdir(basepath):
+    def _find_repos(_path, name):
+        if not path.isdir(_path):
             return []
         ret = []
-        subdir = listdir(basepath)
+        subdir = listdir(_path)
         if '.hg' not in subdir:
             for r in subdir:
                 reponame =  '{0}/{1}'.format(name, r) if name else r
-                ret.extend(_find_repos( path.join(basepath, r), reponame))
+                ret.extend(_find_repos(path.join(_path, r), reponame))
         else:
             ret.append(Repo(
                 type='hg',
