@@ -75,21 +75,27 @@ class TestGitRepo(unittest.TestCase):
 
     def setUp(self):
         """Create a few example repos. Should create some commits."""
-        self.reponames = ['repoA', 'repoB', 'reps/repoC']
+        self.reponames = ['repoA', 'repoB', 'reps/repoC', 'repoD.git', 'reps/repoE.git']
         self.repobase = 'gitrepos'
-        # create repos
+        # create some real repos
         for name in self.reponames:
             repopath = path.join(self.repobase, name)
             # create repo dir
             system('mkdir -p {0}'.format(repopath))
-            # init hg on this repo
-            system('cd {0} && git init > /dev/null'.format(repopath))
+            # init git on this repo
+            if repopath[-4:] == '.git':
+                system('cd {0} && git init --bare > /dev/null'.format(repopath))
+            else:
+                system('cd {0} && git init > /dev/null'.format(repopath))
         # commit some stuff
         self.phonycommits = ['Some initial commit.', 'Doing some stuff.', 'Another commit message.']
-        self.phonyrepo = models.Repo(type='git', name = self.reponames[0], basepath=self.repobase, baseurl='https://git.foo.bar/repos/', commits=[])
+        self.phonyrepo = models.Repo(type='git', name=self.reponames[0], basepath=self.repobase, baseurl='https://git.foo.bar/repos/', commits=[])
         self.phonyuser = 'John Doe <john@doe.com>'
         for (i, commit) in enumerate(self.phonycommits):
             system('cd {0} && git commit -m"{2}" --author "{3}" --allow-empty > /dev/null'.format(self.phonyrepo.path, i, commit, self.phonyuser))
+        # push those commits to the bare repo
+        self.barerepo = models.Repo(type='git', name=self.reponames[3], basepath=self.repobase, baseurl='https://git.foo.bar.repos/', commits=[])
+        system('cd {0} && git remote add origin ../../{1} 2> /dev/null && git push origin --all 2> /dev/null'.format(self.phonyrepo.path, self.barerepo.path))
 
     def tearDown(self):
         """Remove all examples repos, it uses rm -rf, may be dangerous."""
@@ -106,6 +112,19 @@ class TestGitRepo(unittest.TestCase):
     def test_commits(self):
         """Test if commits created in setUp are found."""
         repo = self.phonyrepo
+        until_date = datetime.now()
+        from_date = until_date - timedelta(hours=2)
+        gitrepo.find_git_commits(repo, from_date, until_date)
+        commits = []
+        for commit in repo.commits:
+            commits.append(commit.message)
+        while len(repo.commits) > 0:
+            repo.commits.pop()
+        self.assertEqual(set(commits), set(self.phonycommits))
+
+    def test_bare_repo_commits(self):
+        """Test if commits created in setUp are found."""
+        repo = self.barerepo
         until_date = datetime.now()
         from_date = until_date - timedelta(hours=2)
         gitrepo.find_git_commits(repo, from_date, until_date)
