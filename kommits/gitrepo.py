@@ -15,7 +15,7 @@ def find_git_repos(basepath, baseurl=''):
             return []
         ret = []
         subdir = listdir(_path)
-        if '.git' not in subdir:
+        if '.git' not in subdir and not _path[-4:] == '.git':
             for r in subdir:
                 reponame =  '{0}/{1}'.format(name, r) if name else r
                 ret.extend(_find_repos(path.join(_path, r), reponame))
