@@ -4,7 +4,7 @@
 {% for commit in repo.commits %}<tr>
 <td><a href="{{ commit.url }}">{{ commit.id }}</a></td>
 <td>{{ commit.user }}</td>
-<td>{{ commit.date }}</td>
+<td>{{ commit.date.strftime('%H:%M:%S') }}</td>
 <td>{{ commit.branch }}</td>
 <td>{{ commit.message }}</td>
 </tr>
