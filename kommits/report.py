@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader
 
 import hgrepo
+import gitrepo
 try:
     import config
 except ImportError as e:
@@ -18,13 +19,24 @@ J2ENV = Environment()
 
 def render_report(from_date, until_date):
     """Will return a string with the content needed to send to sendmail."""
-    #TODO: git repos
     withcommits = []
     nocommits = []
+
+    # finding hg commits
     for (basepath, baseurl) in config.HGREPOS:
         repos = hgrepo.find_hg_repos(basepath, baseurl)
         for repo in repos:
             hgrepo.find_hg_commits(repo, from_date, until_date)
+            if len(repo.commits) > 0:
+                withcommits.append(repo)
+            else:
+                nocommits.append(repo)
+
+    # finding git commits
+    for (basepath, baseurl) in config.GITREPOS:
+        repos = gitrepo.find_git_repos(basepath, baseurl)
+        for repo in repos:
+            gitrepo.find_git_commits(repo, from_date, until_date)
             if len(repo.commits) > 0:
                 withcommits.append(repo)
             else:
