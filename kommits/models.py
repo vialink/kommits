@@ -29,4 +29,8 @@ class Commit(_Commit):
             self.urlpattern.format(id=self.id, repo=self.repo, user=self.user, date=self.date, branch=self.branch),
         )
 
+    @property
+    def shortid(self):
+        return str(self.id)[:6]
+
 

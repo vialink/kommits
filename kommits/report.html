@@ -2,7 +2,7 @@
 <b><a href="{{ repo.url }}">{{ repo.type }}:{{ repo.name }}</a></b>
 <table border="1">
 {% for commit in repo.commits %}<tr>
-<td><a href="{{ commit.url }}">{{ commit.id }}</a></td>
+<td><a href="{{ commit.url }}">{{ commit.shortid }}</a></td>
 <td>{{ commit.user }}</td>
 <td>{{ commit.date.strftime('%H:%M:%S') }}</td>
 <td>{{ commit.branch }}</td>
