@@ -37,25 +37,28 @@ def find_git_commits(repo, from_date, until_date):
         # this should be impossible, maybe we should
         # raise an exception to indicate missuse
         return []
-    return []
 
+    #TODO: optimize
     gitrepo = git.Repo(repo.path)
-    changes = hgrepo.changelog
+    commits = [c for c in gitrepo.iter_commits()]
 
-    ctx = lambda c: hgrepo.changectx(c)
-    # helper function to get datetime from change
-    when = lambda ctx: datetime.fromtimestamp(ctx.date()[0])
-    # helper function to get Commit from change
-    com = lambda ctx: Commit(
-        id=ctx.rev(),
+    # helper function to get branch from git.Commit
+    branch = lambda c: gitrepo.git.branch(contains=c.hexsha).split('\n')[0][2:]
+    # helper function to get datetime from git.Commit
+    when = lambda c: datetime.fromtimestamp(c.committed_date)
+    # helper function to get Commit from git.Commit
+    com = lambda c: Commit(
+        id=c.hexsha,
         repo=repo,
-        urlpattern='{repo.name}/rev/{id}',
-        user=ctx.user(),
-        date=when(ctx),
-        branch=ctx.branch(),
+        urlpattern='?p={repo.name};a=commit;h={id}',
+        user=c.author.name,
+        date=when(c),
+        #XXX: in git a commit may be in more than one branch
+        # we are choosing the first we find it in.
+        branch=branch(c),
         #XXX: I don't exactly know why we need to decode
-        message=ctx.description().decode('utf-8'),
+        message=c.summary.decode('utf-8'),
     )
     # filter on date
-    repo.commits.extend([com(ctx(c)) for c in changes if from_date < when(ctx(c)) < until_date])
+    repo.commits.extend([com(c) for c in commits if from_date < when(c) < until_date])
 
