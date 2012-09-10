@@ -57,7 +57,7 @@ def render_email(from_date, until_date):
         'Subject: Commits ({0} to {1})'.format(from_date.strftime(dateformat), until_date.strftime(dateformat)),
         'Content-Type: text/html; charset="utf-8"',
     ))
-    return '{0}\n\n{1}'.format(header, render_report(from_date, until_date))
+    return u'{0}\n\n{1}'.format(header, render_report(from_date, until_date))
 
 
 def render_daily_email():
