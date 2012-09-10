@@ -50,7 +50,8 @@ def find_git_commits(repo, from_date, until_date):
     com = lambda c: Commit(
         id=c.hexsha,
         repo=repo,
-        urlpattern='?p={repo.name};a=commit;h={id}',
+        #urlpattern='?p={repo.name};a=commit;h={id}',
+        urlpattern='{repo.name}/commit/?id={id}'
         user=c.author.name,
         date=when(c),
         #XXX: in git a commit may be in more than one branch
