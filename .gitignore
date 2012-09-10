@@ -1,6 +1,10 @@
 # ignore config file generated from make
 kommits/config.py
 
+# ignore generated documentation
+docs/*
+
+# ignore some temporary files
 *.py[oc]
 *.swp
 
