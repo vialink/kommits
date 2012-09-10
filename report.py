@@ -2,5 +2,5 @@
 from kommits import report
 
 if __name__ == '__main__':
-    print report.render_daily_email()
+    print report.render_daily_email().encode('utf-8')
 

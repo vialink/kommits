@@ -40,7 +40,7 @@ def find_git_commits(repo, from_date, until_date):
 
     #TODO: optimize
     gitrepo = git.Repo(repo.path)
-    commits = [c for c in gitrepo.iter_commits()]
+    commits = [c for c in gitrepo.iter_commits(all=True)]
 
     # helper function to get branch from git.Commit
     branch = lambda c: gitrepo.git.branch(contains=c.hexsha).split('\n')[0][2:]
@@ -56,8 +56,7 @@ def find_git_commits(repo, from_date, until_date):
         #XXX: in git a commit may be in more than one branch
         # we are choosing the first we find it in.
         branch=branch(c),
-        #XXX: I don't exactly know why we need to decode
-        message=c.summary.decode('utf-8'),
+        message=c.summary,
     )
     # filter on date
     repo.commits.extend([com(c) for c in commits if from_date < when(c) < until_date])
