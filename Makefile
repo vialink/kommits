@@ -8,6 +8,10 @@ test:
 
 	@@python kommits/tests.py
 
+docs:
+
+	pycco kommits/*.py
+
 samples: kommits/config.py
 
 kommits/config.py:
