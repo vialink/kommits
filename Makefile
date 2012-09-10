@@ -1,4 +1,8 @@
-all: samples
+all: samples depend
+
+depend:
+
+	@@pip install -r requirements.txt
 
 test:
 
