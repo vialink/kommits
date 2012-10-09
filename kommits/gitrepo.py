@@ -40,7 +40,10 @@ def find_git_commits(repo, from_date, until_date):
 
     #TODO: optimize
     gitrepo = git.Repo(repo.path)
-    commits = [c for c in gitrepo.iter_commits(all=True)]
+    try:
+        commits = [c for c in gitrepo.iter_commits(all=True)]
+    except:
+        commits = []
 
     # helper function to get branch from git.Commit
     branch = lambda c: gitrepo.git.branch(contains=c.hexsha).split('\n')[0][2:]
