@@ -36,5 +36,5 @@ Do the usual github fork and pull request dance.
 License
 -------
 
-Released under the MIT license.
+Released under the MIT license. Read LICENSE.md for more information.
 
