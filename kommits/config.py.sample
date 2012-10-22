@@ -1,8 +1,8 @@
 # Append here all the hg paths you wish to track
 HGREPOS = (
-    ('/var/www/hg/repos/', 'https://hg.vialink.com.br/'),
+    ('/var/hg/', 'https://hg.myprovider.com/'),
 )
 GITREPOS = (
-    ('/var/www/git/', 'https://git.vialink.com.br/'),
+    ('/var/git/', 'https://git.myprovider.com/'),
 )
 
